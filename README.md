@@ -1,6 +1,6 @@
 <div align="center">
   <br/>
-  <img src="screenshots/logo-placeholder.png" alt="AutoInfra Agent" width="120" style="border-radius: 20px;"/>
+  <img src="screenshots/banner.png" alt="AutoInfra Agent" width="120" style="border-radius: 20px;"/>
   <br/>
   <br/>
   <h1>AutoInfra Agent</h1>
