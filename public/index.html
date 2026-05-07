@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoInfra Agent Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233b82f6'/><text x='16' y='22' font-family='monospace' font-size='18' fill='white' text-anchor='middle'>A</text></svg>">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">A</span>
+          <span class="logo-text">AutoInfra Agent</span>
+        </div>
+        <span class="version-badge">v1.2.0</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-tab="overview">
+          <span class="nav-icon">📊</span> Overview
+        </a>
+        <a href="#" class="nav-item" data-tab="deploy">
+          <span class="nav-icon">🚀</span> Deployments
+        </a>
+        <a href="#" class="nav-item" data-tab="containers">
+          <span class="nav-icon">🐳</span> Containers
+        </a>
+        <a href="#" class="nav-item" data-tab="tasks">
+          <span class="nav-icon">📋</span> Task Queue
+        </a>
+        <a href="#" class="nav-item" data-tab="health">
+          <span class="nav-icon">❤️</span> Health
+        </a>
+        <a href="#" class="nav-item" data-tab="logs">
+          <span class="nav-icon">📄</span> Logs
+        </a>
+        <a href="#" class="nav-item" data-tab="ai">
+          <span class="nav-icon">🤖</span> AI Agent
+        </a>
+        <a href="#" class="nav-item" data-tab="config">
+          <span class="nav-icon">⚙️</span> Configuration
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="connection-status" id="connectionStatus">
+          <span class="status-dot offline"></span>
+          <span class="status-text">Disconnected</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content" id="mainContent">
+      <!-- Overview Tab -->
+      <section class="tab-content active" id="tab-overview">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+          <div class="header-meta">
+            <span id="overviewUptime">Uptime: --</span>
+            <span id="overviewVersion">v1.2.0</span>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statContainers">0</div>
+            <div class="stat-label">Containers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statDeployments">0</div>
+            <div class="stat-label">Deployments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statTasks">0</div>
+            <div class="stat-label">Queue Size</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statCpu">--</div>
+            <div class="stat-label">CPU Usage</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statMemory">--</div>
+            <div class="stat-label">Memory</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statUptime">--</div>
+            <div class="stat-label">Server Uptime</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="btn btn-primary" onclick="switchTab('deploy')">🚀 New Deployment</button>
+            <button class="btn btn-secondary" onclick="switchTab('containers')">🐳 View Containers</button>
+            <button class="btn btn-secondary" onclick="switchTab('tasks')">📋 Task Queue</button>
+            <button class="btn btn-secondary" onclick="switchTab('ai')">🤖 AI Analysis</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>System Services</h3>
+          <div class="services-list" id="servicesList">
+            <div class="service-item"><span>Web Server</span><span class="status-badge running">● Running</span></div>
+            <div class="service-item"><span>WebSocket</span><span class="status-badge running">● Running</span></div>
+            <div class="service-item"><span>Task Queue</span><span class="status-badge running">● Running</span></div>
+            <div class="service-item"><span>Docker Monitor</span><span class="status-badge running">● Running</span></div>
+            <div class="service-item"><span>Health Scheduler</span><span class="status-badge running">● Running</span></div>
+            <div class="service-item"><span>Metrics Collector</span><span class="status-badge running">● Running</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deployments Tab -->
+      <section class="tab-content" id="tab-deploy">
+        <div class="page-header">
+          <h1>Deployments</h1>
+          <button class="btn btn-primary" onclick="startDeployment()">+ New Deployment</button>
+        </div>
+        <div class="card">
+          <h3>Available Workflows</h3>
+          <div class="workflows" id="workflows"></div>
+        </div>
+        <div class="card">
+          <h3>Deployment History</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Workflow</th>
+                  <th>Target</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="deploymentTableBody">
+                <tr><td colspan="6" class="empty-state">No deployments yet. Start one above!</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Containers Tab -->
+      <section class="tab-content" id="tab-containers">
+        <div class="page-header">
+          <h1>Containers</h1>
+          <span id="containerSummary"></span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="contTotal">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-card"><div class="stat-value" id="contRunning">0</div><div class="stat-label">Running</div></div>
+          <div class="stat-card"><div class="stat-value" id="contStopped">0</div><div class="stat-label">Stopped</div></div>
+          <div class="stat-card"><div class="stat-value" id="contAvgCpu">--</div><div class="stat-label">Avg CPU</div></div>
+          <div class="stat-card"><div class="stat-value" id="contAvgMem">--</div><div class="stat-label">Avg Memory</div></div>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Image</th>
+                  <th>State</th>
+                  <th>CPU</th>
+                  <th>Memory</th>
+                  <th>Uptime</th>
+                </tr>
+              </thead>
+              <tbody id="containerTableBody">
+                <tr><td colspan="6" class="empty-state">No containers detected.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks Tab -->
+      <section class="tab-content" id="tab-tasks">
+        <div class="page-header">
+          <h1>Task Queue</h1>
+          <div class="btn-group">
+            <button class="btn btn-secondary" onclick="pauseQueue()">⏸ Pause</button>
+            <button class="btn btn-secondary" onclick="resumeQueue()">▶ Resume</button>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="taskQueued">0</div><div class="stat-label">Queued</div></div>
+          <div class="stat-card"><div class="stat-value" id="taskRunning">0</div><div class="stat-label">Running</div></div>
+          <div class="stat-card"><div class="stat-value" id="taskCompleted">0</div><div class="stat-label">Completed</div></div>
+          <div class="stat-card"><div class="stat-value" id="taskFailed">0</div><div class="stat-label">Failed</div></div>
+        </div>
+        <div class="card">
+          <h3>Add Task</h3>
+          <div class="add-task-form">
+            <select id="taskTypeSelect">
+              <option value="health-check">Health Check</option>
+              <option value="log-analysis">Log Analysis</option>
+              <option value="deploy">Deploy</option>
+              <option value="backup">Backup</option>
+              <option value="notification">Notification</option>
+            </select>
+            <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Recent Completed</h3>
+          <div id="completedTasks"></div>
+        </div>
+        <div class="card">
+          <h3>Recent Failures</h3>
+          <div id="failedTasks"></div>
+        </div>
+      </section>
+
+      <!-- Health Tab -->
+      <section class="tab-content" id="tab-health">
+        <div class="page-header">
+          <h1>Server Health</h1>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="healthCpu">--</div><div class="stat-label">CPU</div></div>
+          <div class="stat-card"><div class="stat-value" id="healthMemory">--</div><div class="stat-label">Memory</div></div>
+          <div class="stat-card"><div class="stat-value" id="healthDisk">--</div><div class="stat-label">Disk</div></div>
+          <div class="stat-card"><div class="stat-value" id="healthUptime">--</div><div class="stat-label">Uptime</div></div>
+        </div>
+        <div class="card">
+          <h3>System Information</h3>
+          <div id="systemInfo" class="info-grid"></div>
+        </div>
+      </section>
+
+      <!-- Logs Tab -->
+      <section class="tab-content" id="tab-logs">
+        <div class="page-header">
+          <h1>Log Viewer</h1>
+        </div>
+        <div class="card">
+          <div class="log-controls">
+            <select id="logFileSelect"><option value="">Select a log file...</option></select>
+            <input type="number" id="logLines" value="50" min="10" max="1000" style="width:80px">
+            <input type="text" id="logSearch" placeholder="Search filter..." style="flex:1">
+            <button class="btn btn-primary" onclick="loadLogs()">View</button>
+          </div>
+          <pre class="log-viewer" id="logViewer">Select a log file and click View.</pre>
+        </div>
+      </section>
+
+      <!-- AI Agent Tab -->
+      <section class="tab-content" id="tab-ai">
+        <div class="page-header">
+          <h1>AI Agent</h1>
+          <span id="aiStatus" class="status-badge warning">● Simulated Mode</span>
+        </div>
+        <div class="card">
+          <h3>Analyze Logs</h3>
+          <textarea id="aiLogInput" rows="6" placeholder="Paste log content to analyze..."></textarea>
+          <button class="btn btn-primary" onclick="analyzeLogs()">Analyze</button>
+          <div id="aiLogResult" class="ai-result"></div>
+        </div>
+        <div class="card">
+          <h3>Generate Deployment Config</h3>
+          <input type="text" id="aiDeployInput" placeholder="e.g., Deploy a Node.js app with PostgreSQL">
+          <button class="btn btn-primary" onclick="generateDeploy()">Generate</button>
+          <div id="aiDeployResult" class="ai-result"></div>
+        </div>
+      </section>
+
+      <!-- Config Tab -->
+      <section class="tab-content" id="tab-config">
+        <div class="page-header">
+          <h1>Configuration</h1>
+        </div>
+        <div class="card">
+          <h3>Active Configuration</h3>
+          <pre id="configDisplay" class="config-viewer">Loading...</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="deployModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Start New Deployment</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Workflow</label>
+          <select id="modalWorkflow"></select>
+        </div>
+        <div class="form-group">
+          <label>Target Server</label>
+          <input type="text" id="modalTarget" value="localhost">
+        </div>
+        <div class="form-group">
+          <label>Branch</label>
+          <input type="text" id="modalBranch" value="main">
+        </div>
+        <div class="form-group">
+          <label>Environment</label>
+          <select id="modalEnv">
+            <option value="staging">Staging</option>
+            <option value="production">Production</option>
+            <option value="development">Development</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitDeployment()">Deploy</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/dashboard/app.js"></script>
+</body>
+</html>
